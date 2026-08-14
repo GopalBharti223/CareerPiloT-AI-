@@ -1,27 +1,43 @@
 # CareerPilot AI
 
-CareerPilot AI is a career assistance web application I built using ASP.NET Core.
+CareerPilot AI is a career-focused web application that I built to help users manage their profiles and resumes and get AI-based feedback on their resumes.
 
-The main idea behind the project is to help users manage their career-related information and get useful feedback on their resumes. Users can create an account, manage their profile, upload resumes, and get an AI-based resume analysis.
+I built this project as a hands-on .NET project to learn and practice real-world application development. While working on it, I worked with ASP.NET Core, Entity Framework Core, SQL Server, authentication, file handling, email services, and an external AI API.
 
-I built this project mainly to get hands-on experience with ASP.NET Core, Web API development, Entity Framework Core, SQL Server, authentication, and working with an AI API.
+The project is still under development, so I’m continuing to improve the existing features and add new ones.
+
+---
 
 ## Features
 
-* User registration and login
+### User & Authentication
+
+* User registration
+* Login
 * OTP verification
-* Password reset
-* JWT-based authentication
-* User profile management
+* JWT authentication
+* Forgot password
+* Password reset using OTP
 * Change password
-* Resume upload
+* User profile management
+
+### Resume
+
+* Upload resumes
 * Resume history
 * Resume analysis
 * ATS score
-* AI-generated resume feedback
-* Email notifications
-* SQL Server database
+* AI-based resume feedback
+
+### Other
+
+* Email functionality
+* SQL Server database integration
 * Entity Framework Core migrations
+* DTO-based request/response handling
+* Service-based application structure
+
+---
 
 ## Tech Stack
 
@@ -29,17 +45,33 @@ I built this project mainly to get hands-on experience with ASP.NET Core, Web AP
 
 * C#
 * ASP.NET Core
-* ASP.NET Core MVC / Web API
+* ASP.NET Core MVC
+* Web API
 * Entity Framework Core
 * SQL Server
 * JWT Authentication
 
-### Other
+### Frontend / UI
 
-* Groq API for AI-based resume analysis
-* SMTP / Gmail for email functionality
+* HTML
+* CSS
+* JavaScript
+* Razor Views
 * Bootstrap
-* HTML / CSS / JavaScript
+
+### External Services
+
+* Groq API — used for AI-based resume analysis
+* Gmail SMTP — used for sending emails
+
+### Development Tools
+
+* Visual Studio
+* SQL Server Management Studio (SSMS)
+* Git
+* GitHub
+
+---
 
 ## Project Structure
 
@@ -54,11 +86,58 @@ CareerPilot AI
 ├── Services
 ├── Views
 ├── wwwroot
+│
 ├── Program.cs
-└── CareerPilot AI.csproj
+├── CareerPilot AI.csproj
+└── CareerPilot AI.slnx
 ```
 
-## How to Run the Project
+---
+
+## Current Status
+
+**Status: In Development 🚧**
+
+The main functionality of the application is working, and the project is currently being improved.
+
+### Currently Working
+
+* Registration and login
+* OTP verification
+* JWT authentication
+* Forgot/reset password
+* Profile management
+* Change password
+* Resume upload
+* Resume history
+* Resume analysis
+* ATS score generation
+* AI-based resume feedback
+* Email functionality
+* SQL Server integration
+* Entity Framework Core migrations
+
+### Currently Improving
+
+* Resume analysis and ATS scoring
+* User interface and overall user experience
+* Career-related features
+* Validation and error handling
+* Code structure and cleanup
+* Testing different application flows
+
+---
+
+## Setup
+
+### Prerequisites
+
+Before running the project, make sure you have:
+
+* .NET SDK
+* Visual Studio
+* SQL Server / SQL Server Express
+* SQL Server Management Studio (SSMS)
 
 ### 1. Clone the repository
 
@@ -66,13 +145,21 @@ CareerPilot AI
 git clone https://github.com/GopalBharti223/CareerPiloT-AI-.git
 ```
 
+Then open the project folder.
+
 ### 2. Open the project
 
-Open `CareerPilot AI.slnx` in Visual Studio.
+Open:
+
+```text
+CareerPilot AI.slnx
+```
+
+in Visual Studio.
 
 ### 3. Configure SQL Server
 
-The project uses SQL Server.
+The application uses SQL Server.
 
 Create a database named:
 
@@ -80,55 +167,92 @@ Create a database named:
 CareerPilotAI
 ```
 
-Update the connection string according to your local SQL Server setup.
+The connection string should be configured according to your local SQL Server instance.
 
-### 4. Configure application secrets
+For example:
 
-The project requires configuration for:
+```text
+Server=.\SQLEXPRESS;Database=CareerPilotAI;Trusted_Connection=True;TrustServerCertificate=True;
+```
+
+### 4. Configure secrets
+
+The project uses a few values that should **not** be stored in GitHub:
 
 * JWT key
 * Groq API key
-* Email account / SMTP password
+* Email password / SMTP credentials
 
-These values are intentionally not included in this repository.
+For local development, configure these using **ASP.NET Core User Secrets** or another local configuration method.
 
-For local development, add them using ASP.NET Core User Secrets or your preferred local configuration method.
+The actual secret values are intentionally not included in this repository.
 
-### 5. Apply migrations
+### 5. Apply Entity Framework migrations
 
-Run:
+From the project directory:
 
 ```bash
 dotnet ef database update
 ```
 
-### 6. Run the project
+### 6. Run the application
 
-Run the project from Visual Studio or use:
+You can run the application from Visual Studio or use:
 
 ```bash
 dotnet run
 ```
 
-## Notes
+---
 
-This is a personal learning/project application, and I am continuing to improve it as I learn more about .NET development.
+## Future Improvements
 
-Some parts of the project may change as new features and improvements are added.
+Some improvements I plan to work on:
+
+* Improve ATS scoring accuracy
+* Improve AI resume analysis
+* Add more detailed career suggestions
+* Improve the dashboard
+* Improve UI/UX
+* Add better validation and error handling
+* Add more career-related features
+* Improve testing
+* Prepare the application for deployment
+* Improve production configuration
+
+---
 
 ## What I Learned
 
-While building CareerPilot AI, I got practical experience with:
+Building CareerPilot AI gave me hands-on practice with several parts of .NET development, including:
 
-* Building ASP.NET Core applications
-* Creating APIs and controllers
-* Working with Entity Framework Core
-* Designing database relationships
-* Creating and applying migrations
-* JWT authentication and authorization
-* DTOs and model validation
+* ASP.NET Core application development
+* MVC and Web API
+* C# programming
+* Entity Framework Core
+* SQL Server
+* Database migrations
+* JWT authentication
+* Authorization
+* DTOs
 * File uploads
-* Sending emails from an application
-* Integrating an external AI API
-* Organizing services and application logic
-* Using Git and GitHub for version control
+* Email services
+* External API integration
+* Service-based architecture
+* Git and GitHub
+
+This project is still a work in progress, and I’ll continue improving it as I learn more.
+
+---
+
+## Author
+
+**Gopal Bharti**
+
+GitHub: [GopalBharti223](https://github.com/GopalBharti223)
+
+---
+
+## Note
+
+This project was built as a personal learning and portfolio project. Some features and implementation details may change as development continues.
