@@ -1,0 +1,17 @@
+# Visual Studio
+.vs/
+*.user
+*.suo
+
+# Build files
+bin/
+obj/
+
+# Local configuration / secrets
+appsettings.json
+appsettings.Development.json
+
+# Environment files
+.env
+.env.*
+Uploads/
