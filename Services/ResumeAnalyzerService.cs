@@ -1,9 +1,9 @@
 ﻿using CareerPilot_AI.Models;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
+using Microsoft.Extensions.Logging;
 
 namespace CareerPilot_AI.Services
 {
@@ -11,13 +11,15 @@ namespace CareerPilot_AI.Services
     {
         private readonly HttpClient _httpClient;
         private readonly IConfiguration _configuration;
+        private readonly ILogger<ResumeAnalyzerService> _logger;
 
-        private readonly PasswordHasher<User> _passwordHasher = new PasswordHasher<User>();
+        
 
-        public ResumeAnalyzerService(HttpClient httpClient, IConfiguration configuration)
+        public ResumeAnalyzerService(HttpClient httpClient, IConfiguration configuration, ILogger<ResumeAnalyzerService> logger)
         {
             _httpClient = httpClient;
             _configuration = configuration;
+            _logger = logger;
         }
 
         public async Task<ResumeAnalysisResult?> AnalyzeResume(string resumeText)
@@ -111,7 +113,7 @@ namespace CareerPilot_AI.Services
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                _logger.LogError(ex, "Error while analyzing resume.");
                 return null;
             }
         }
