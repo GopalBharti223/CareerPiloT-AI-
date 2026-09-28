@@ -21,10 +21,13 @@ namespace CareerPilot_AI.Controllers
         private readonly CareerPilotAIDbContext _context;
         private readonly ResumeAnalyzerService _resumeAnalyzerService;
 
-        public ResumeController(CareerPilotAIDbContext context, ResumeAnalyzerService resumeAnalyzerService)
+        private readonly ILogger<ResumeController> _logger;
+
+        public ResumeController(CareerPilotAIDbContext context, ResumeAnalyzerService resumeAnalyzerService, ILogger<ResumeController> logger)
         {
             _context = context;
             _resumeAnalyzerService = resumeAnalyzerService;
+            _logger = logger;
         }
 
 
@@ -38,6 +41,11 @@ namespace CareerPilot_AI.Controllers
             if (dto.ResumeFile == null || dto.ResumeFile.Length == 0)
             {
                 return BadRequest("Please upload a resume.");
+            }
+
+            if (dto.ResumeFile.Length > 5 * 1024 * 1024)
+            {
+                return BadRequest("Resume file size cannot exceed 5 MB.");
             }
 
 
@@ -109,8 +117,9 @@ namespace CareerPilot_AI.Controllers
 
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Error while saving resume analysis.");
                 return StatusCode(500,
-                    $"{ex.Message}\n\n{ex.InnerException?.Message}");
+                    "Something went wrong while processing your request.");
             }
 
 
@@ -189,12 +198,12 @@ namespace CareerPilot_AI.Controllers
         {
             int userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
 
-             Resume resume = _context.Resumes.FirstOrDefault(a =>
-             (a.ResumeId ==resumeId) &&
-              a.UserId == userId);
-
             ResumeAnalysis analysis = _context.ResumeAnalyses
-             .FirstOrDefault(a => a.ResumeId == resumeId);
+           .FirstOrDefault(a =>
+               a.ResumeId == resumeId &&
+               a.Resume.UserId == userId);
+
+            
 
             if (analysis == null)
             {

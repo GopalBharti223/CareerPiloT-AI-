@@ -5,6 +5,7 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <RootNamespace>CareerPilot_AI</RootNamespace>
+    <UserSecretsId>04723430-ca4f-4280-90b8-5c943c9efd7f</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
