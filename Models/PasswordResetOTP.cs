@@ -15,6 +15,8 @@ namespace CareerPilot_AI.Models
 
         public DateTime ExpiresAt { get; set; }
 
+        public int FailedAttempts { get; set; }
+
         public User User { get; set; }
     }
 }

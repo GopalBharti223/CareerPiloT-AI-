@@ -46,6 +46,21 @@ namespace CareerPilot_AI.Services
                 return null;
             }
 
+            using (var stream = dto.ResumeFile.OpenReadStream())
+            {
+                byte[] header = new byte[5];
+
+                await stream.ReadAsync(header, 0, 5);
+
+                string fileSignature =
+                    Encoding.ASCII.GetString(header);
+
+                if (fileSignature != "%PDF-")
+                {
+                    return null;
+                }
+            }
+
             string uniqueFileName =
                 Guid.NewGuid().ToString() +
                 Path.GetExtension(dto.ResumeFile.FileName);

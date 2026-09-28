@@ -2,6 +2,7 @@
 using CareerPilot_AI.DTOs;
 using CareerPilot_AI.Models;
 using Microsoft.AspNetCore.Identity;
+using System.Security.Cryptography;
 
 namespace CareerPilot_AI.Services
 {
@@ -78,11 +79,12 @@ namespace CareerPilot_AI.Services
                 _context.PasswordResetOTPs
                 .FirstOrDefault(p => p.UserId == user.UserId);
 
-            Random random = new Random();
-            int generatedOTP = random.Next(100000, 1000000);
+            int generatedOTP =
+         RandomNumberGenerator.GetInt32(100000, 1000000);
 
             if (passwordReset != null)
             {
+                passwordReset.FailedAttempts = 0;
                 passwordReset.OTP = generatedOTP.ToString();
                 passwordReset.CreatedAt = DateTime.Now;
                 passwordReset.ExpiresAt =
@@ -130,15 +132,32 @@ namespace CareerPilot_AI.Services
             {
                 return "No OTP found for this user";
             }
-
+            if (passwordReset.FailedAttempts >= 5)
+            {
+                return "OTP verification failed";
+            }
             if (DateTime.Now > passwordReset.ExpiresAt)
             {
                 return "OTP has expired";
             }
 
+            if (passwordReset.FailedAttempts >= 5)
+            {
+                return "OTP verification failed";
+            }
+
             if (dto.OTP == passwordReset.OTP)
             {
                 return "OTP verified successfully";
+            }
+
+            passwordReset.FailedAttempts++;
+
+            _context.SaveChanges();
+
+            if (passwordReset.FailedAttempts >= 5)
+            {
+                return "OTP verification failed";
             }
 
             return "Invalid OTP";
