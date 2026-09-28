@@ -1,12 +1,18 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace CareerPilot_AI.DTOs
 {
-    public class JobMatchingDTO : Controller
+    public class JobMatchingDTO
     {
-        public IActionResult Index()
-        {
-            return View();
-        }
+        [Required]
+        public int ResumeId { get; set; }
+
+        [Required]
+        public string JobTitle { get; set; }
+
+        public string? Company { get; set; }
+
+        [Required]
+        public string JobDescription { get; set; }
     }
 }

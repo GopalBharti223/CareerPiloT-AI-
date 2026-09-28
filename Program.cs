@@ -17,6 +17,7 @@ builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<ProfileService>();
 builder.Services.AddScoped<PasswordService>();
 builder.Services.AddScoped<ResumeService>();
+builder.Services.AddScoped<JobMatchingService>();
 
 builder.Services.AddHttpClient();
 
