@@ -35,5 +35,22 @@ namespace CareerPilot_AI.Controllers
 
             return Ok(result);
         }
+
+
+        [HttpGet("History")]
+        public async Task<IActionResult> GetHistory()
+        {
+            var userIdClaim =
+                User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (!int.TryParse(userIdClaim, out int userId))
+                return Unauthorized();
+
+            var history =
+                await _jobMatchingService.GetJobMatchingHistory(userId);
+
+            return Ok(history);
+        }
+
     }
 }

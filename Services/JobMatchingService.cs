@@ -143,14 +143,14 @@ Resume:
                     return null;
 
                 using JsonDocument jsonDocument =
-     JsonDocument.Parse(responseBody);
+                    JsonDocument.Parse(responseBody);
 
                 string aiJson =
                     jsonDocument.RootElement
                         .GetProperty("choices")[0]
                         .GetProperty("message")
                         .GetProperty("content")
-                        .GetString(); ;
+                        .GetString();
 
                 aiJson = aiJson
                     .Replace("```json", "")
@@ -167,6 +167,35 @@ Resume:
                         aiJson,
                         options);
 
+                if (result == null)
+                    return null;
+
+                // Save job matching result to history
+                var history = new JobMatchingHistory
+                {
+                    UserId = userId,
+                    ResumeId = dto.ResumeId,
+                    JobTitle = dto.JobTitle,
+                    Company = dto.Company,
+                    MatchScore = result.MatchScore,
+                    MatchedSkills = JsonSerializer.Serialize(
+                        result.MatchedSkills ?? new List<string>()),
+                    MissingSkills = JsonSerializer.Serialize(
+                        result.MissingSkills ?? new List<string>()),
+                    MatchedKeywords = JsonSerializer.Serialize(
+                        result.MatchedKeywords ?? new List<string>()),
+                    MissingKeywords = JsonSerializer.Serialize(
+                        result.MissingKeywords ?? new List<string>()),
+                    ExperienceMatch = result.ExperienceMatch ?? "",
+                    Suggestions = JsonSerializer.Serialize(
+                        result.Suggestions ?? new List<string>()),
+                    CreatedAt = DateTime.Now
+                };
+
+                _context.JobMatchingHistories.Add(history);
+
+                await _context.SaveChangesAsync();
+
                 return result;
             }
             catch (Exception ex)
@@ -178,5 +207,39 @@ Resume:
                 return null;
             }
         }
+
+        public async Task<List<JobMatchingHistoryDTO>> GetJobMatchingHistory(
+    int userId)
+        {
+            var history = await _context.JobMatchingHistories
+                .Where(h => h.UserId == userId)
+                .OrderByDescending(h => h.CreatedAt)
+                .ToListAsync();
+
+            return history.Select(h => new JobMatchingHistoryDTO
+            {
+                JobMatchingHistoryId = h.JobMatchingHistoryId,
+                ResumeId = h.ResumeId,
+                JobTitle = h.JobTitle,
+                Company = h.Company,
+                MatchScore = h.MatchScore,
+                MatchedSkills = JsonSerializer.Deserialize<List<string>>(
+                    h.MatchedSkills) ?? new List<string>(),
+                MissingSkills = JsonSerializer.Deserialize<List<string>>(
+                    h.MissingSkills) ?? new List<string>(),
+                MatchedKeywords = JsonSerializer.Deserialize<List<string>>(
+                    h.MatchedKeywords) ?? new List<string>(),
+                MissingKeywords = JsonSerializer.Deserialize<List<string>>(
+                    h.MissingKeywords) ?? new List<string>(),
+                ExperienceMatch = h.ExperienceMatch,
+                Suggestions = JsonSerializer.Deserialize<List<string>>(
+                    h.Suggestions) ?? new List<string>(),
+                CreatedAt = h.CreatedAt
+            }).ToList();
+        }
+
+
     }
+
+
 }

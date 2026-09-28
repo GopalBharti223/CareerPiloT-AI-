@@ -155,11 +155,6 @@ namespace CareerPilot_AI.Services
 
             _context.SaveChanges();
 
-            if (passwordReset.FailedAttempts >= 5)
-            {
-                return "OTP verification failed";
-            }
-
             return "Invalid OTP";
         }
 

@@ -19,8 +19,10 @@
 
             public DbSet<PasswordResetOTP> PasswordResetOTPs { get; set; }
 
-        
+         public DbSet<JobMatchingHistory> JobMatchingHistories { get; set; }
 
 
-        }
+
+
+    }
     }

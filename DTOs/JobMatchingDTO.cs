@@ -13,6 +13,7 @@ namespace CareerPilot_AI.DTOs
         public string? Company { get; set; }
 
         [Required]
+        [MinLength(20)]
         public string JobDescription { get; set; }
     }
 }
