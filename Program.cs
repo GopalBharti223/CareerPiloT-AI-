@@ -13,6 +13,10 @@ builder.Services.AddControllersWithViews();
 
 builder.Services.AddScoped<EmailService>();
 builder.Services.AddScoped<ResumeAnalyzerService>();
+builder.Services.AddScoped<AuthService>();
+builder.Services.AddScoped<ProfileService>();
+builder.Services.AddScoped<PasswordService>();
+
 builder.Services.AddHttpClient();
 
 builder.Services.AddEndpointsApiExplorer();

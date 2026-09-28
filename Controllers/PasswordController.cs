@@ -1,9 +1,6 @@
-﻿using CareerPilot_AI.Data;
-using CareerPilot_AI.DTOs;
-using CareerPilot_AI.Models;
+﻿using CareerPilot_AI.DTOs;
 using CareerPilot_AI.Services;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
@@ -13,18 +10,11 @@ namespace CareerPilot_AI.Controllers
     [Route("api/[controller]")]
     public class PasswordController : ControllerBase
     {
-        private readonly CareerPilotAIDbContext _context;
-        private readonly EmailService _emailService;
+        private readonly PasswordService _passwordService;
 
-        private readonly PasswordHasher<User> _passwordHasher =
-            new PasswordHasher<User>();
-
-        public PasswordController(
-            CareerPilotAIDbContext context,
-            EmailService emailService)
+        public PasswordController(PasswordService passwordService)
         {
-            _context = context;
-            _emailService = emailService;
+            _passwordService = passwordService;
         }
 
         [Authorize]
@@ -34,182 +24,72 @@ namespace CareerPilot_AI.Controllers
             int userId = int.Parse(
                 User.FindFirst(ClaimTypes.NameIdentifier).Value);
 
-            User user = _context.Users
-                .FirstOrDefault(u => u.UserId == userId);
+            string result = _passwordService.ChangePassword(
+                userId,
+                dto);
 
-            if (user == null)
+            if (result == "User not found")
             {
-                return NotFound("User not found");
+                return NotFound(result);
             }
 
-            var passwordVerificationResult =
-                _passwordHasher.VerifyHashedPassword(
-                    user,
-                    user.Password,
-                    dto.CurrentPassword);
-
-            if (passwordVerificationResult ==
-                PasswordVerificationResult.Failed)
+            if (result != "Password changed successfully")
             {
-                return BadRequest("Old password is incorrect");
+                return BadRequest(result);
             }
 
-            if (dto.NewPassword != dto.ConfirmPassword)
-            {
-                return BadRequest(
-                    "New password and confirm password do not match");
-            }
-
-            if (dto.NewPassword == dto.CurrentPassword)
-            {
-                return BadRequest(
-                    "New password must be different from current password");
-            }
-
-            user.Password = _passwordHasher.HashPassword(
-                user,
-                dto.NewPassword);
-
-            _context.SaveChanges();
-
-            return Ok("Password changed successfully");
+            return Ok(result);
         }
 
         [HttpPost("ForgotPassword")]
         public IActionResult ForgotPassword(ForgotPasswordDTO dto)
         {
-            User user = _context.Users
-                .FirstOrDefault(u => u.Email == dto.Email);
+            string result = _passwordService.ForgotPassword(dto);
 
-            if (user == null)
-            {
-                return Ok(
-                    "If the email is registered, an OTP has been sent.");
-            }
-
-            PasswordResetOTP passwordReset =
-                _context.PasswordResetOTPs
-                .FirstOrDefault(p => p.UserId == user.UserId);
-
-            Random random = new Random();
-            int generatedOTP = random.Next(100000, 1000000);
-
-            if (passwordReset != null)
-            {
-                passwordReset.OTP = generatedOTP.ToString();
-                passwordReset.CreatedAt = DateTime.Now;
-                passwordReset.ExpiresAt =
-                    DateTime.Now.AddMinutes(5);
-
-                _context.SaveChanges();
-
-                _emailService.SendEmail(
-                    user.Email,
-                    "CareerPilot AI - Password Reset OTP",
-                    $"Your OTP is: {generatedOTP}");
-            }
-            else
-            {
-                PasswordResetOTP newPasswordReset =
-                    new PasswordResetOTP();
-
-                newPasswordReset.UserId = user.UserId;
-                newPasswordReset.OTP = generatedOTP.ToString();
-                newPasswordReset.CreatedAt = DateTime.Now;
-                newPasswordReset.ExpiresAt =
-                    DateTime.Now.AddMinutes(5);
-
-                _context.PasswordResetOTPs.Add(newPasswordReset);
-                _context.SaveChanges();
-
-                _emailService.SendEmail(
-                    user.Email,
-                    "CareerPilot AI - Password Reset OTP",
-                    $"Your OTP is: {generatedOTP}");
-            }
-
-            return Ok(
-                "If the email is registered, an OTP has been sent.");
+            return Ok(result);
         }
 
         [HttpPost("VerifyOtp")]
         public IActionResult VerifyOtp(VerifyOtpDTO dto)
         {
-            User user = _context.Users
-                .FirstOrDefault(u => u.Email == dto.Email);
+            string result = _passwordService.VerifyOtp(dto);
 
-            if (user == null)
+            if (result == "OTP verified successfully")
             {
-                return BadRequest("User not found");
+                return Ok(result);
             }
 
-            PasswordResetOTP passwordReset =
-                _context.PasswordResetOTPs
-                .FirstOrDefault(p => p.UserId == user.UserId);
-
-            if (passwordReset == null)
+            if (result == "User not found" ||
+                result == "No OTP found for this user" ||
+                result == "OTP has expired" ||
+                result == "Invalid OTP")
             {
-                return BadRequest("No OTP found for this user");
+                return BadRequest(result);
             }
 
-            if (DateTime.Now > passwordReset.ExpiresAt)
-            {
-                return BadRequest("OTP has expired");
-            }
-
-            if (dto.OTP == passwordReset.OTP)
-            {
-                return Ok("OTP verified successfully");
-            }
-
-            return BadRequest("Invalid OTP");
+            return BadRequest(result);
         }
 
         [HttpPost("ResetPassword")]
         public IActionResult ResetPassword(ResetPasswordDTO dto)
         {
-            User user = _context.Users
-                .FirstOrDefault(u => u.Email == dto.Email);
+            string result = _passwordService.ResetPassword(dto);
 
-            if (user == null)
+            if (result == "Password reset successfully")
             {
-                return BadRequest("User not found");
+                return Ok(result);
             }
 
-            PasswordResetOTP passwordReset =
-                _context.PasswordResetOTPs
-                .FirstOrDefault(p => p.UserId == user.UserId);
-
-            if (passwordReset == null)
+            if (result == "User not found" ||
+                result == "No OTP found for this user" ||
+                result == "OTP has expired" ||
+                result == "Invalid OTP" ||
+                result == "New password and confirm password do not match")
             {
-                return BadRequest("No OTP found for this user");
+                return BadRequest(result);
             }
 
-            if (DateTime.Now > passwordReset.ExpiresAt)
-            {
-                return BadRequest("OTP has expired");
-            }
-
-            if (dto.OTP != passwordReset.OTP)
-            {
-                return BadRequest("Invalid OTP");
-            }
-
-            if (dto.NewPassword != dto.ConfirmPassword)
-            {
-                return BadRequest(
-                    "New password and confirm password do not match");
-            }
-
-            user.Password = _passwordHasher.HashPassword(
-                user,
-                dto.NewPassword);
-
-            _context.PasswordResetOTPs.Remove(passwordReset);
-            _context.SaveChanges();
-
-            return Ok("Password reset successfully");
+            return BadRequest(result);
         }
     }
 }
-

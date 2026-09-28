@@ -1,6 +1,5 @@
-﻿using CareerPilot_AI.Data;
-using CareerPilot_AI.DTOs;
-using CareerPilot_AI.Models;
+﻿using CareerPilot_AI.DTOs;
+using CareerPilot_AI.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
@@ -11,11 +10,11 @@ namespace CareerPilot_AI.Controllers
     [Route("api/[controller]")]
     public class ProfileController : ControllerBase
     {
-        private readonly CareerPilotAIDbContext _context;
+        private readonly ProfileService _profileService;
 
-        public ProfileController(CareerPilotAIDbContext context)
+        public ProfileController(ProfileService profileService)
         {
-            _context = context;
+            _profileService = profileService;
         }
 
         [Authorize]
@@ -25,20 +24,12 @@ namespace CareerPilot_AI.Controllers
             int userId = int.Parse(
                 User.FindFirst(ClaimTypes.NameIdentifier).Value);
 
-            User user = _context.Users
-                .FirstOrDefault(u => u.UserId == userId);
+            var userDto = _profileService.GetProfile(userId);
 
-            if (user == null)
+            if (userDto == null)
             {
                 return NotFound("User not found");
             }
-
-            ProfileResponseDTO userDto = new ProfileResponseDTO();
-
-            userDto.UserName = user.UserName;
-            userDto.Email = user.Email;
-            userDto.MobileNumber = user.MobileNumber;
-            userDto.CreatedAt = user.CreatedAt;
 
             return Ok(userDto);
         }
@@ -50,31 +41,21 @@ namespace CareerPilot_AI.Controllers
             int userId = int.Parse(
                 User.FindFirst(ClaimTypes.NameIdentifier).Value);
 
-            User user = _context.Users
-                .FirstOrDefault(u => u.UserId == userId);
+            string result = _profileService.UpdateProfile(
+                userId,
+                dto);
 
-            if (user == null)
+            if (result == "User not found")
             {
-                return NotFound("User not found");
+                return NotFound(result);
             }
 
-            var existingUser = _context.Users.FirstOrDefault(u =>
-                u.Email == dto.Email &&
-                u.UserId != userId);
-
-            if (existingUser != null)
+            if (result == "Email already registered")
             {
-                return BadRequest("Email already registered");
+                return BadRequest(result);
             }
 
-            user.UserName = dto.UserName;
-            user.Email = dto.Email;
-            user.MobileNumber = dto.MobileNumber;
-
-            _context.SaveChanges();
-
-            return Ok("Profile updated successfully");
+            return Ok(result);
         }
     }
 }
-
