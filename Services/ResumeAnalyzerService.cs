@@ -1,4 +1,5 @@
 ﻿using CareerPilot_AI.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using System.Net.Http.Headers;
 using System.Text;
@@ -10,6 +11,8 @@ namespace CareerPilot_AI.Services
     {
         private readonly HttpClient _httpClient;
         private readonly IConfiguration _configuration;
+
+        private readonly PasswordHasher<User> _passwordHasher = new PasswordHasher<User>();
 
         public ResumeAnalyzerService(HttpClient httpClient, IConfiguration configuration)
         {

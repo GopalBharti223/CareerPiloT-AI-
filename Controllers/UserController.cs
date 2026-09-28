@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.AspNetCore.Identity;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -21,6 +22,8 @@ namespace CareerPilot_AI.Controllers
         private readonly IConfiguration _configuration;
         private readonly EmailService _emailService;
 
+        private readonly PasswordHasher<User> _passwordHasher = new PasswordHasher<User>();
+
         public UserController(CareerPilotAIDbContext context, IConfiguration configuration, EmailService emailService)
         {
             _context = context;
@@ -34,11 +37,20 @@ namespace CareerPilot_AI.Controllers
 
         public IActionResult Register(RegisterRequestDTO request)
         {
+
+            var existingUser = _context.Users
+            .FirstOrDefault(u => u.Email.ToLower() == request.Email.ToLower());
+
+            if (existingUser != null)
+            {
+                return BadRequest("Email already registered");
+            }
+
             User user = new User();
             user.UserName = request.UserName;
             user.Email = request.Email;
             user.MobileNumber = request.MobileNumber;
-            user.Password = request.Password;
+            user.Password = _passwordHasher.HashPassword(user, request.Password);
             user.CreatedAt = DateTime.UtcNow;
             _context.Users.Add(user);
             _context.SaveChanges();
@@ -58,9 +70,14 @@ namespace CareerPilot_AI.Controllers
                 return BadRequest("Email not found");
             }
 
-            if (user.Password!=request.Password)
+            var passwordVerificationResult = _passwordHasher.VerifyHashedPassword(
+                user,
+                user.Password,
+                request.Password);
+
+            if (passwordVerificationResult == PasswordVerificationResult.Failed)
             {
-                return BadRequest("Not Matched");
+                return BadRequest("Invalid email or password");
             }
 
             var claims = new[]
@@ -107,6 +124,11 @@ namespace CareerPilot_AI.Controllers
              );
             User user = _context.Users.FirstOrDefault(u => u.UserId == userId);
 
+            if (user == null)
+            {
+                return NotFound("User not found");
+            }
+
             ProfileResponseDTO UserDto = new ProfileResponseDTO();
             UserDto.UserName = user.UserName;
             UserDto.Email = user.Email;
@@ -128,6 +150,15 @@ namespace CareerPilot_AI.Controllers
             if (userTable == null)
             {
                 return NotFound("User not found");
+            }
+
+            var existingUser = _context.Users.FirstOrDefault(u =>
+                u.Email == dto.Email &&
+                u.UserId != findId);
+
+            if (existingUser != null)
+            {
+                return BadRequest("Email already registered");
             }
 
             userTable.UserName = dto.UserName;
@@ -159,18 +190,30 @@ namespace CareerPilot_AI.Controllers
                 return NotFound("User not found");
             }
 
-           if(userTable.Password != dto.CurrentPassword)
+            var passwordVerificationResult = _passwordHasher.VerifyHashedPassword(
+             userTable,
+             userTable.Password,
+             dto.CurrentPassword);
+
+            if (passwordVerificationResult == PasswordVerificationResult.Failed)
             {
                 return BadRequest("Old password is incorrect");
-            } 
-           
+            }
+
 
             if (dto.NewPassword != dto.ConfirmPassword)
             {
                 return BadRequest("New password and confirm password do not match");
             }
 
-            userTable.Password = dto.NewPassword;
+            if (dto.NewPassword == dto.CurrentPassword)
+            {
+                return BadRequest("New password must be different from current password");
+            }
+
+            userTable.Password = _passwordHasher.HashPassword(
+            userTable,
+            dto.NewPassword);
 
             _context.SaveChanges();
 
@@ -187,7 +230,7 @@ namespace CareerPilot_AI.Controllers
 
             if (user == null)
             {
-                return BadRequest("Email not found");
+                return Ok("If the email is registered, an OTP has been sent.");
             }
 
             PasswordResetOTP pwdreset = _context.PasswordResetOTPs.FirstOrDefault(p => p.UserId == user.UserId);
@@ -295,11 +338,17 @@ namespace CareerPilot_AI.Controllers
             {
                 return BadRequest("OTP has expired");
             }
+
+            if (dto.OTP != pro.OTP)
+            {
+                return BadRequest("Invalid OTP");
+            }
+
             if (dto.NewPassword != dto.ConfirmPassword)
             {
                 return BadRequest("New password and confirm password do not match");
             }
-            user.Password = dto.NewPassword;
+            user.Password = _passwordHasher.HashPassword(user,dto.NewPassword);
             //_context.SaveChanges();
             // Optionally, you can delete the OTP record after successful password reset
             _context.PasswordResetOTPs.Remove(pro);
