@@ -95,11 +95,16 @@ namespace CareerPilot_AI.Services
                 using JsonDocument document = JsonDocument.Parse(responseBody);
 
                 string aiJson =
-                    document.RootElement
-                            .GetProperty("choices")[0]
-                            .GetProperty("message")
-                            .GetProperty("content")
-                            .GetString();
+    document.RootElement
+            .GetProperty("choices")[0]
+            .GetProperty("message")
+            .GetProperty("content")
+            .GetString();
+
+                aiJson = aiJson
+                    .Replace("```json", "")
+                    .Replace("```", "")
+                    .Trim();
 
                 var options = new JsonSerializerOptions
                 {
@@ -107,7 +112,9 @@ namespace CareerPilot_AI.Services
                 };
 
                 ResumeAnalysisResult? result =
-                    JsonSerializer.Deserialize<ResumeAnalysisResult>(aiJson, options);
+                    JsonSerializer.Deserialize<ResumeAnalysisResult>(
+                        aiJson,
+                        options);
 
                 return result;
             }
