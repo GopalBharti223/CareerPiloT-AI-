@@ -16,6 +16,7 @@ builder.Services.AddScoped<ResumeAnalyzerService>();
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<ProfileService>();
 builder.Services.AddScoped<PasswordService>();
+builder.Services.AddScoped<ResumeService>();
 
 builder.Services.AddHttpClient();
 
