@@ -10,6 +10,15 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("ReactPolicy", policy =>
+    {
+        policy.WithOrigins("http://localhost:5173")
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
 
 builder.Services.AddScoped<EmailService>();
 builder.Services.AddScoped<ResumeAnalyzerService>();
@@ -81,7 +90,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 // Database
 builder.Services.AddDbContext<CareerPilotAIDbContext>(options =>
 {
-    options.UseSqlServer(
+    options.UseNpgsql(
         builder.Configuration.GetConnectionString("DefaultConnection"));
 });
 
@@ -102,6 +111,8 @@ else
 app.UseHttpsRedirection();
 
 app.UseRouting();
+
+app.UseCors("ReactPolicy");
 
 app.UseAuthentication();
 
