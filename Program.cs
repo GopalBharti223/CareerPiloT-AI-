@@ -12,9 +12,9 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("ReactPolicy", policy =>
+    options.AddPolicy("AllowFrontend", policy =>
     {
-        policy.WithOrigins("http://localhost:5173")
+        policy.WithOrigins("https://careerpilot-frontend-o977.onrender.com")
               .AllowAnyHeader()
               .AllowAnyMethod();
     });
@@ -110,7 +110,7 @@ app.UseHttpsRedirection();
 
 app.UseRouting();
 
-app.UseCors("ReactPolicy");
+app.UseCors("AllowFrontend");
 
 app.UseAuthentication();
 
