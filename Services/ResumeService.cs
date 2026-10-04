@@ -93,7 +93,7 @@ namespace CareerPilot_AI.Services
                 resume.UserId = userId;
                 resume.FileName = uniqueFileName;
                 resume.FileLocation = filePath;
-                resume.UploadedAt = DateTime.Now;
+                resume.UploadedAt = DateTime.UtcNow;
 
                 _context.Resumes.Add(resume);
 
@@ -134,7 +134,7 @@ namespace CareerPilot_AI.Services
                     string.Join(", ", result.MissingSkills);
                 analysis.Suggestions =
                     string.Join(", ", result.Suggestions);
-                analysis.AnalyzedAt = DateTime.Now;
+                analysis.AnalyzedAt = DateTime.UtcNow;
 
                 _context.ResumeAnalyses.Add(analysis);
 
