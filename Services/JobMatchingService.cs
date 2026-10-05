@@ -196,7 +196,7 @@ Resume:
                     ExperienceMatch = result.ExperienceMatch ?? "",
                     Suggestions = JsonSerializer.Serialize(
                         result.Suggestions ?? new List<string>()),
-                    CreatedAt = DateTime.Now
+                    CreatedAt = DateTime.UtcNow
                 };
 
                 _context.JobMatchingHistories.Add(history);
