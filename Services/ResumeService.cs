@@ -91,7 +91,7 @@ namespace CareerPilot_AI.Services
                 Resume resume = new Resume();
 
                 resume.UserId = userId;
-                resume.FileName = uniqueFileName;
+                resume.FileName = dto.ResumeFile.FileName;
                 resume.FileLocation = filePath;
                 resume.UploadedAt = DateTime.UtcNow;
 
