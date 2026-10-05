@@ -14,7 +14,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>
     {
-        policy.WithOrigins("https://careerpilot-frontend-o977.onrender.com")
+        policy.WithOrigins("https://careerpilot-frontend-o977.onrender.com", "http://localhost:5173")
               .AllowAnyHeader()
               .AllowAnyMethod();
     });
