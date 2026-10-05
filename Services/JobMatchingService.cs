@@ -46,7 +46,14 @@ namespace CareerPilot_AI.Services
 
                 // Check that the resume file exists
                 if (!File.Exists(resume.FileLocation))
+                {
+                    _logger.LogError(
+                        "Resume file not found. ResumeId: {ResumeId}, FileLocation: {FileLocation}",
+                        dto.ResumeId,
+                        resume.FileLocation);
+
                     return null;
+                }
 
                 // Extract text from PDF
                 string resumeText = "";
