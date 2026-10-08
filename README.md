@@ -1,258 +1,437 @@
-# CareerPilot AI
+# CareerPilot AI 🚀
 
-CareerPilot AI is a career-focused web application that I built to help users manage their profiles and resumes and get AI-based feedback on their resumes.
+CareerPilot AI is an AI-powered career assistance web application that I built to help users manage their profiles, analyze resumes, and evaluate their compatibility with job descriptions.
 
-I built this project as a hands-on .NET project to learn and practice real-world application development. While working on it, I worked with ASP.NET Core, Entity Framework Core, SQL Server, authentication, file handling, email services, and an external AI API.
+The project was built as a hands-on full-stack .NET application to practice real-world development concepts including ASP.NET Core Web API, C#, Entity Framework Core, PostgreSQL, JWT authentication, file handling, email services, React, and external AI API integration.
 
-The project is still under development, so I’m continuing to improve the existing features and add new ones.
+The application is deployed and available online.
 
 ---
 
-## Features
+## 🌐 Live Demo & Project Links
 
-### User & Authentication
+| Resource            | Link                                                   |
+| ------------------- | ------------------------------------------------------ |
+| 🚀 Live Application | https://careerpilot-frontend-o977.onrender.com         |
+| 📚 Swagger API      | https://careerpilot-ai-spdz.onrender.com/swagger       |
+| 💻 Frontend GitHub  | https://github.com/GopalBharti223/CareerPilot-Frontend |
+| ⚙️ Backend GitHub   | https://github.com/GopalBharti223/CareerPiloT-AI-      |
+
+---
+
+## ✨ Features
+
+### 🔐 Authentication & User Management
 
 * User registration
-* Login
-* OTP verification
+* User login
 * JWT authentication
+* OTP/email verification
 * Forgot password
 * Password reset using OTP
-* Change password
+* Password hashing
+* Protected API endpoints
 * User profile management
+* Change password
+* Authorization and user ownership checks
 
-### Resume
+### 📄 Resume Management
 
-* Upload resumes
+* Upload PDF resumes
+* PDF file validation
 * Resume history
 * Resume analysis
+* Resume deletion
+* User-specific resume access
+* ATS score generation
+* AI-powered resume feedback
+
+### 🤖 AI Resume Analysis
+
+CareerPilot AI uses an external AI API to analyze uploaded resumes.
+
+The analysis provides:
+
 * ATS score
-* AI-based resume feedback
+* Resume summary
+* Detected skills
+* Missing skills
+* Improvement suggestions
+* AI-generated feedback
 
-### Other
+The resume analysis flow is:
 
-* Email functionality
-* SQL Server database integration
-* Entity Framework Core migrations
-* DTO-based request/response handling
-* Service-based application structure
+```text
+Resume Upload
+      ↓
+PDF Validation
+      ↓
+PDF Text Extraction
+      ↓
+AI Analysis
+      ↓
+JSON Response
+      ↓
+Database Storage
+      ↓
+Frontend Result
+```
+
+### 🎯 Job Matching
+
+Users can compare their resume against a specific job description.
+
+The Job Matching feature accepts:
+
+* Resume
+* Job title
+* Company name
+* Job description
+
+It then provides:
+
+* Job match score
+* Matched skills
+* Missing skills
+* Matched keywords
+* Missing keywords
+* Experience match
+* Suggestions for improvement
+
+Job matching history is also stored and associated with the authenticated user.
+
+### 📧 Email & Password Services
+
+* OTP email verification
+* Password reset emails
+* Gmail SMTP integration
 
 ---
 
-## Tech Stack
+## 🏗️ Architecture
+
+CareerPilot AI follows a frontend-backend architecture:
+
+```text
+                    CareerPilot AI
+                         │
+          ┌──────────────┴──────────────┐
+          │                             │
+     React Frontend               ASP.NET Core API
+          │                             │
+          │                       Service Layer
+          │                             │
+          │                       Entity Framework
+          │                             │
+          │                       PostgreSQL / Neon
+          │
+          └────────────── API ───────────┘
+                         │
+                    Groq AI API
+```
+
+### Backend Flow
+
+```text
+Controller
+    ↓
+DTO
+    ↓
+Service Layer
+    ↓
+Entity Framework Core
+    ↓
+PostgreSQL
+```
+
+For AI-powered features:
+
+```text
+Controller
+    ↓
+Service
+    ↓
+PDF / Job Description Processing
+    ↓
+Groq API
+    ↓
+JSON Response
+    ↓
+DTO / Model
+    ↓
+Database
+    ↓
+API Response
+```
+
+---
+
+## 🛠️ Tech Stack
 
 ### Backend
 
 * C#
-* ASP.NET Core
-* ASP.NET Core MVC
-* Web API
+* ASP.NET Core Web API
 * Entity Framework Core
-* SQL Server
+* PostgreSQL
+* Npgsql
 * JWT Authentication
+* DTOs
+* Dependency Injection
+* Service-based architecture
+* Swagger / OpenAPI
 
-### Frontend / UI
+### Frontend
 
+* React
+* Vite
+* JavaScript
 * HTML
 * CSS
-* JavaScript
-* Razor Views
-* Bootstrap
 
-### External Services
+### AI & External Services
 
-* Groq API — used for AI-based resume analysis
-* Gmail SMTP — used for sending emails
+* Groq API — AI-powered resume and job matching analysis
+* Gmail SMTP — email and OTP functionality
+* PdfPig — PDF text extraction
 
-### Development Tools
+### Database & Deployment
 
-* Visual Studio
-* SQL Server Management Studio (SSMS)
+* PostgreSQL
+* Neon — cloud PostgreSQL database
+* Render — frontend and backend deployment
 * Git
 * GitHub
 
 ---
 
-## Project Structure
+## 🔒 Security & Validation
+
+The application implements several security and validation mechanisms:
+
+* JWT-based authentication
+* `[Authorize]` protected endpoints
+* User ID extraction from JWT claims
+* Resume ownership validation
+* Job matching ownership validation
+* Password hashing
+* Required-field validation
+* Email validation
+* Password validation
+* PDF extension validation
+* PDF magic-byte validation
+* File size validation
+* Protected user-specific history
+* Secrets kept outside the source code
+
+---
+
+## 🗄️ Database
+
+CareerPilot AI uses PostgreSQL with Entity Framework Core.
+
+The main entities include:
 
 ```text
-CareerPilot AI
+Users
+  │
+  └── Resumes
+        │
+        └── ResumeAnalyses
+
+Users
+  │
+  └── JobMatchingHistories
+```
+
+The application uses EF Core for database access and migrations.
+
+---
+
+## 📁 Backend Structure
+
+The backend follows a controller/service/DTO-based structure.
+
+```text
+CareerPilot AI Backend
 │
 ├── Controllers
+│   ├── AuthController
+│   ├── ProfileController
+│   ├── ResumeController
+│   └── JobMatchingController
+│
 ├── DTOs
-├── Data
-├── Migrations
+│
 ├── Models
+│
+├── Data
+│
 ├── Services
-├── Views
-├── wwwroot
+│   ├── AuthService
+│   ├── ProfileService
+│   ├── PasswordService
+│   ├── ResumeService
+│   ├── ResumeAnalyzerService
+│   └── JobMatchingService
+│
+├── Migrations
 │
 ├── Program.cs
-├── CareerPilot AI.csproj
-└── CareerPilot AI.slnx
+└── CareerPilot AI.csproj
 ```
 
 ---
 
-## Current Status
+## 🎨 Frontend
 
-**Status: In Development 🚧**
+The frontend is a separate React/Vite application.
 
-The main functionality of the application is working, and the project is currently being improved.
+It communicates with the ASP.NET Core backend using REST APIs.
 
-### Currently Working
+The frontend includes functionality for:
 
-* Registration and login
-* OTP verification
-* JWT authentication
-* Forgot/reset password
+* Registration
+* Login
 * Profile management
-* Change password
 * Resume upload
 * Resume history
 * Resume analysis
-* ATS score generation
-* AI-based resume feedback
-* Email functionality
-* SQL Server integration
-* Entity Framework Core migrations
+* Job matching
+* Job matching history
+* Password recovery
 
-### Currently Improving
-
-* Resume analysis and ATS scoring
-* User interface and overall user experience
-* Career-related features
-* Validation and error handling
-* Code structure and cleanup
-* Testing different application flows
+Authentication is handled using JWT tokens stored on the client side, with protected API requests automatically including the bearer token.
 
 ---
 
-## Setup
+## ☁️ Deployment
 
-### Prerequisites
-
-Before running the project, make sure you have:
-
-* .NET SDK
-* Visual Studio
-* SQL Server / SQL Server Express
-* SQL Server Management Studio (SSMS)
-
-### 1. Clone the repository
-
-```bash
-git clone https://github.com/GopalBharti223/CareerPiloT-AI-.git
-```
-
-Then open the project folder.
-
-### 2. Open the project
-
-Open:
+The current deployment architecture is:
 
 ```text
-CareerPilot AI.slnx
+React / Vite
+     │
+     ▼
+   Render
+     │
+     │ REST API
+     ▼
+ASP.NET Core Web API
+     │
+     ├──────────► Groq API
+     │
+     └──────────► Neon PostgreSQL
 ```
 
-in Visual Studio.
+### Deployment Services
 
-### 3. Configure SQL Server
-
-The application uses SQL Server.
-
-Create a database named:
-
-```text
-CareerPilotAI
-```
-
-The connection string should be configured according to your local SQL Server instance.
-
-For example:
-
-```text
-Server=.\SQLEXPRESS;Database=CareerPilotAI;Trusted_Connection=True;TrustServerCertificate=True;
-```
-
-### 4. Configure secrets
-
-The project uses a few values that should **not** be stored in GitHub:
-
-* JWT key
-* Groq API key
-* Email password / SMTP credentials
-
-For local development, configure these using **ASP.NET Core User Secrets** or another local configuration method.
-
-The actual secret values are intentionally not included in this repository.
-
-### 5. Apply Entity Framework migrations
-
-From the project directory:
-
-```bash
-dotnet ef database update
-```
-
-### 6. Run the application
-
-You can run the application from Visual Studio or use:
-
-```bash
-dotnet run
-```
+* **Frontend:** Render
+* **Backend:** Render
+* **Database:** Neon PostgreSQL
+* **Source Control:** GitHub
+* **API Documentation:** Swagger / OpenAPI
 
 ---
 
-## Future Improvements
+## 🧪 Testing & Development
 
-Some improvements I plan to work on:
+During development, I tested the application through:
 
-* Improve ATS scoring accuracy
-* Improve AI resume analysis
-* Add more detailed career suggestions
-* Improve the dashboard
-* Improve UI/UX
-* Add better validation and error handling
-* Add more career-related features
-* Improve testing
-* Prepare the application for deployment
-* Improve production configuration
+* Swagger
+* Browser-based frontend testing
+* Authentication and authorization flows
+* Resume upload and analysis
+* Resume history
+* User ownership checks
+* Job matching
+* Job matching history
+* HTTP status code validation
+* Database operations
+* Deployment testing on Render
+
+I also debugged issues involving:
+
+* CORS
+* JWT authentication
+* API authorization
+* PDF file handling
+* AI JSON responses
+* PostgreSQL `DateTime` handling
+* Render deployment behavior
 
 ---
 
-## What I Learned
+## 🚀 Current Status
 
-Building CareerPilot AI gave me hands-on practice with several parts of .NET development, including:
+**Status: Completed Portfolio Project**
 
-* ASP.NET Core application development
-* MVC and Web API
-* C# programming
+The main CareerPilot AI functionality has been implemented and deployed.
+
+Currently available:
+
+* Authentication
+* OTP verification
+* Password recovery
+* Profile management
+* Resume upload
+* Resume analysis
+* ATS scoring
+* AI resume feedback
+* Resume history
+* Resume deletion
+* Job matching
+* Job matching history
+* JWT authorization
+* PostgreSQL database integration
+* React frontend
+* Swagger API
+* Cloud deployment
+
+The project may receive improvements in the future, but the current version represents the completed portfolio implementation.
+
+---
+
+## 📚 What I Learned
+
+Building CareerPilot AI gave me practical experience with:
+
+* ASP.NET Core Web API
+* C#
+* REST API development
 * Entity Framework Core
-* SQL Server
-* Database migrations
+* PostgreSQL
 * JWT authentication
 * Authorization
-* DTOs
-* File uploads
+* DTO-based API design
+* Dependency Injection
+* Service-layer architecture
+* File upload and validation
+* PDF processing
 * Email services
 * External API integration
-* Service-based architecture
+* AI API integration
+* React and Vite
 * Git and GitHub
-
-This project is still a work in progress, and I’ll continue improving it as I learn more.
+* Render deployment
+* Neon PostgreSQL
+* API debugging
+* Error handling
+* Application security
 
 ---
 
-## Author
+## 👨‍💻 Author
 
 **Gopal Bharti**
 
-GitHub: [GopalBharti223](https://github.com/GopalBharti223)
+GitHub:
+https://github.com/GopalBharti223
 
 ---
 
-## Note
+## 📌 Note
 
-This project was built as a personal learning and portfolio project. Some features and implementation details may change as development continues.
+CareerPilot AI is a personal learning and portfolio project built to gain practical experience in full-stack .NET and AI-powered application development.
+
+The application is intended as a portfolio/demo project rather than a production SaaS platform.
